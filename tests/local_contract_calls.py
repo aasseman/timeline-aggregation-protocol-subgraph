@@ -91,8 +91,10 @@ try:
 except ContractCustomError as e:
     print("Custom Error: %s" % e)
     print(decode_custom_error(erc20_abi_json, str(e), w3))
+    sys.exit(1)
 except ContractLogicError as e:
     print("Logic Error: %s" % e)
+    sys.exit(1)
 
 # MOCK STAKING CONTRACT CALLS
 try:
@@ -101,8 +103,10 @@ try:
 except ContractCustomError as e:
     print("Custom Error: %s" % e)
     print(decode_custom_error(mockStaking_abi_json, str(e), w3))
+    sys.exit(1)
 except ContractLogicError as e:
     print("Logic Error: %s" % e)
+    sys.exit(1)
 
 # ESCROW CONTRACT CALLS
 try:
@@ -164,6 +168,7 @@ try:
             print("Skip, signer already authorized")
         else:
             print(error)
+            sys.exit(1)
     check_subgraph_signer(SIGNER, True, False)
 
     print("--- Executing deposit for redeem")
@@ -206,6 +211,7 @@ try:
                 time.sleep(time_left + 1)
             else:
                 print(error)
+                sys.exit(1)
     print("Done revoking")
 
     check_subgraph_signer(SIGNER, False, False)
@@ -214,7 +220,10 @@ try:
 except ContractCustomError as e:
     print("Custom Error: %s" % e)
     print(decode_custom_error(escrow_abi_json, str(e), w3))
+    sys.exit(1)
 except ContractLogicError as e:
     print("Logic Error: %s" % e)
+    sys.exit(1)
 except Exception as e:
     print(e)
+    sys.exit(1)

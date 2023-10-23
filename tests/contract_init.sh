@@ -42,15 +42,19 @@ ESCROW_AD=$(echo $ESCROW_VAR | jq -r '.deployedTo')
 echo "Escrow address: $ESCROW_AD"
 
 cd $current_dir
+cd ..
 
 echo "Deploying locally the subgraph"
-yq ".dataSources[].source.address=\"$ESCROW_AD\"" ../subgraph.yaml -i
+yq ".dataSources[].source.address=\"$ESCROW_AD\"" subgraph.yaml -i
 yarn codegen
 yarn build
 yarn create-local
 yarn deploy-local
 
+cd $current_dir
 echo "Running escrow contract calls"
 python local_contract_calls.py "$ESCROW_AD" "$TAP_VERIFIER_AD" "$GRAPH_TOKEN" "$ISTAKING_AD"
 
-
+if [ $? -ne 0 ]; then
+  exit 1  
+fi
