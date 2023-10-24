@@ -89,24 +89,19 @@ try:
     erc20.functions.transfer(SIGNER, 500).transact({"from": GATEWAY})
     erc20.functions.transfer(RECEIVER, 500).transact({"from": GATEWAY})
 except ContractCustomError as e:
-    print("Custom Error: %s" % e)
-    print(decode_custom_error(erc20_abi_json, str(e), w3))
-    sys.exit(1)
+    raise ContractCustomError(decode_custom_error(erc20_abi_json, str(e), w3))
 except ContractLogicError as e:
     print("Logic Error: %s" % e)
-    sys.exit(1)
+    raise ContractLogicError(f"Logic Error: {e}")
 
 # MOCK STAKING CONTRACT CALLS
 try:
     print("Allocate receiver with allocationid")
     mockStaking.functions.allocate(ALLOCATION_ID, RECEIVER).transact({"from": GATEWAY})
 except ContractCustomError as e:
-    print("Custom Error: %s" % e)
-    print(decode_custom_error(mockStaking_abi_json, str(e), w3))
-    sys.exit(1)
+    raise ContractCustomError(decode_custom_error(mockStaking_abi_json, str(e), w3))
 except ContractLogicError as e:
-    print("Logic Error: %s" % e)
-    sys.exit(1)
+    raise ContractLogicError(f"Logic Error: {e}")
 
 # ESCROW CONTRACT CALLS
 try:
@@ -167,8 +162,7 @@ try:
         if "SignerAlreadyAuthorized" in error:
             print("Skip, signer already authorized")
         else:
-            print(error)
-            sys.exit(1)
+            raise ContractCustomError(error)
     check_subgraph_signer(SIGNER, True, False)
 
     print("--- Executing deposit for redeem")
@@ -210,20 +204,15 @@ try:
                 print(f"Signer still thawing, time left: {time_left}")
                 time.sleep(time_left + 1)
             else:
-                print(error)
-                sys.exit(1)
+                raise ContractCustomError(error)
     print("Done revoking")
 
     check_subgraph_signer(SIGNER, False, False)
 
     print("Transactions ran succesfully")
 except ContractCustomError as e:
-    print("Custom Error: %s" % e)
-    print(decode_custom_error(escrow_abi_json, str(e), w3))
-    sys.exit(1)
+    raise ContractCustomError(decode_custom_error(escrow_abi_json, str(e), w3))
 except ContractLogicError as e:
-    print("Logic Error: %s" % e)
-    sys.exit(1)
+    raise ContractLogicError(f"Logic Error: {e}")
 except Exception as e:
-    print(e)
-    sys.exit(1)
+    raise Exception(e)

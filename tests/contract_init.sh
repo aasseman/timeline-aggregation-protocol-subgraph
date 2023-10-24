@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 GATEWAY=0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
 SIGNER=0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0
@@ -54,7 +55,3 @@ yarn deploy-local
 cd $current_dir
 echo "Running escrow contract calls"
 python local_contract_calls.py "$ESCROW_AD" "$TAP_VERIFIER_AD" "$GRAPH_TOKEN" "$ISTAKING_AD"
-
-if [ $? -ne 0 ]; then
-  exit 1  
-fi
