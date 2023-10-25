@@ -19,7 +19,8 @@ jobs:
         with:
           node-version: "lts/gallium"
       - name: Install graph CLI
-        run: npm install -g @graphprotocol/graph-cli
+        run: |
+          npm install -g @graphprotocol/graph-cli
       - uses: actions/setup-python@v4
         with:
             python-version: '3.8'
@@ -27,10 +28,12 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
       - name: Start Docker Compose
-        run: docker-compose up -d
+        run: |
+              docker-compose up -d
         working-directory: ./tests
       - name: Installing python requirements
-        run: pip install -r requirements.txt
+        run: |
+              pip install -r requirements.txt
         working-directory: ./tests
       - run: |
           yarn
