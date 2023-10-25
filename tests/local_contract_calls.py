@@ -91,7 +91,6 @@ try:
 except ContractCustomError as e:
     raise ContractCustomError(decode_custom_error(erc20_abi_json, str(e), w3))
 except ContractLogicError as e:
-    print("Logic Error: %s" % e)
     raise ContractLogicError(f"Logic Error: {e}")
 
 # MOCK STAKING CONTRACT CALLS
