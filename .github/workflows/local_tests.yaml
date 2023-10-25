@@ -14,8 +14,6 @@ jobs:
         name: Check out repository
         with:
           submodules: true
-      - name: Checkout submodules
-        run: git submodule update --init --recursive
       - uses: actions/setup-node@v2
         name: Set up Node.js
         with:
