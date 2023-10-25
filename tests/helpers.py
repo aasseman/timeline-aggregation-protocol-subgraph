@@ -6,7 +6,7 @@ import requests
 from eth_utils.abi import collapse_if_tuple, function_abi_to_4byte_selector
 from web3 import Web3
 
-MAX_TRIES = 20
+MAX_TRIES = 15
 GATEWAY = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
 GATEWAY_PK = "4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
 
@@ -98,6 +98,7 @@ def increment_nonce(address, nonce_data):
 def obtain_subgraph_info_backoff(endpoint, request_data, entity_to_check):
     print(f"Checking subgraph data for {entity_to_check}")
     resp = requests.post(endpoint, json=request_data)
+    print(f" ==== Subgraph response ==== \n {resp.text}")
     if resp.status_code == 200:
         print(resp.text)
         data = json.loads(resp.text)["data"][entity_to_check]
