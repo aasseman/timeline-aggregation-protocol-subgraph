@@ -29,6 +29,9 @@ jobs:
       - name: Start Docker Compose
         run: docker-compose up -d
         working-directory: ./tests
+      - name: Display Docker Compose Logs
+        run: docker-compose logs
+        working-directory: ./tests
       - name: Installing python requirements
         run: pip install -r requirements.txt
         working-directory: ./tests
