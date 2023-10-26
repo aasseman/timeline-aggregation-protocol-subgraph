@@ -98,7 +98,7 @@ def increment_nonce(address, nonce_data):
 def obtain_subgraph_info_backoff(endpoint, request_data, entity_to_check):
     print(f"Checking subgraph data for {entity_to_check}")
     resp = requests.post(endpoint, json=request_data)
-    print(f" ==== Subgraph response ==== \n {resp.text}")
+    print(f" ==== Subgraph response check ==== \n {resp.text}")
     if resp.status_code == 200:
         print(resp.text)
         data = json.loads(resp.text)["data"][entity_to_check]
@@ -113,6 +113,18 @@ def obtain_subgraph_info_backoff(endpoint, request_data, entity_to_check):
 def check_subgraph_transaction(
     id, sender, receiver, type, amount, endpoint=subgraph_endpoint
 ):
+    
+    graphql_query = """
+        transactions {
+            amount
+            id
+            type
+        }
+    """
+    request_data = {"query": graphql_query}
+    resp = obtain_subgraph_info_backoff(endpoint, request_data, "transactions")
+    print(f" ==== Subgraph response info ==== \n {resp.text}")
+    ####################
     graphql_query = """
         query($id: String!){
             transactions(where: {id: $id}) {
