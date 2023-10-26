@@ -115,7 +115,7 @@ def check_subgraph_transaction(
 ):
     
     graphql_query = """
-        query(){
+        query{
             transactions {
                 amount
                 id
