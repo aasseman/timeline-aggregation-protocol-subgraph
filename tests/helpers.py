@@ -6,6 +6,7 @@ import requests
 from eth_utils.abi import collapse_if_tuple, function_abi_to_4byte_selector
 from web3 import Web3
 
+MAX_TRIES = 7
 GATEWAY = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
 GATEWAY_PK = "4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
 
@@ -93,10 +94,11 @@ def increment_nonce(address, nonce_data):
     return nonce_data
 
 
-@backoff.on_exception(backoff.expo, Exception, max_tries=10)
+@backoff.on_exception(backoff.expo, Exception, max_tries=MAX_TRIES)
 def obtain_subgraph_info_backoff(endpoint, request_data, entity_to_check):
     print(f"Checking subgraph data for {entity_to_check}")
     resp = requests.post(endpoint, json=request_data)
+    print(f" ==== Subgraph response check==== \n {resp.text}")
     if resp.status_code == 200:
         print(resp.text)
         data = json.loads(resp.text)["data"][entity_to_check]
@@ -111,6 +113,20 @@ def obtain_subgraph_info_backoff(endpoint, request_data, entity_to_check):
 def check_subgraph_transaction(
     id, sender, receiver, type, amount, endpoint=subgraph_endpoint
 ):
+    
+    graphql_query = """
+        query{
+            transactions {
+                amount
+                id
+                type
+            }
+        }
+    """
+    request_data = {"query": graphql_query}
+    resp = obtain_subgraph_info_backoff(endpoint, request_data, "transactions")
+    print(f" ==== Subgraph response info ==== \n {resp.text}")
+    ####################
     graphql_query = """
         query($id: String!){
             transactions(where: {id: $id}) {
@@ -130,7 +146,7 @@ def check_subgraph_transaction(
         raise Exception(f"Subgraph expected info at amount incorrect")
 
 
-@backoff.on_exception(backoff.expo, Exception, max_tries=10)
+@backoff.on_exception(backoff.expo, Exception, max_tries=MAX_TRIES)
 def check_subgraph_escrow_account(
     sender, receiver, total_amount_thawing, balance, endpoint=subgraph_endpoint
 ):
@@ -176,7 +192,7 @@ def error_in_signer_data(signer_data, thawing, authorized):
     return error
 
 
-@backoff.on_exception(backoff.expo, Exception, max_tries=15)
+@backoff.on_exception(backoff.expo, Exception, max_tries=MAX_TRIES)
 def check_subgraph_signer(
     signer, authorized, is_thawing, endpoint=subgraph_endpoint, test_net=False
 ):
